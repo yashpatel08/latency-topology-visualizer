@@ -11,12 +11,12 @@ const generateHistoricalData = (hours: number, serverPair: string) => {
   const data = [];
   const now = Date.now();
   const baseLatency = Math.random() * 100 + 50;
-  
+
   for (let i = hours; i >= 0; i--) {
     const timestamp = new Date(now - i * 60 * 60 * 1000);
     const variation = (Math.random() - 0.5) * 30;
     const latency = Math.max(10, baseLatency + variation);
-    
+
     data.push({
       timestamp: timestamp.toISOString(),
       time: timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
@@ -24,7 +24,7 @@ const generateHistoricalData = (hours: number, serverPair: string) => {
       date: timestamp.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     });
   }
-  
+
   return data;
 };
 
@@ -59,7 +59,7 @@ export default function HistoricalLatencyTrends() {
   useEffect(() => {
     setLoading(true);
     const hours = timeRanges.find(tr => tr.value === timeRange)?.hours || 24;
-    
+
     // Simulate API call delay
     setTimeout(() => {
       const historicalData = generateHistoricalData(hours, selectedPair);
@@ -70,12 +70,12 @@ export default function HistoricalLatencyTrends() {
 
   const statistics = useMemo(() => {
     if (data.length === 0) return { min: 0, max: 0, avg: 0 };
-    
+
     const latencies = data.map(d => d.latency);
     const min = Math.min(...latencies);
     const max = Math.max(...latencies);
     const avg = latencies.reduce((a, b) => a + b, 0) / latencies.length;
-    
+
     return {
       min: min.toFixed(2),
       max: max.toFixed(2),
@@ -85,13 +85,13 @@ export default function HistoricalLatencyTrends() {
 
   const currentPair = serverPairs.find(p => p.id === selectedPair);
 
-  const getLatencyColor = (latency) => {
+  const getLatencyColor = (latency: number) => {
     if (latency < 50) return '#10b981'; // green
     if (latency < 100) return '#f59e0b'; // yellow
     return '#ef4444'; // red
   };
 
-  const CustomTooltip = ({ active, payload }) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: any[] }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -227,22 +227,22 @@ export default function HistoricalLatencyTrends() {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                  <XAxis 
-                    dataKey={timeRange === '1' ? 'time' : 'date'} 
+                  <XAxis
+                    dataKey={timeRange === '1' ? 'time' : 'date'}
                     stroke="#888"
                     tick={{ fill: '#888' }}
                   />
-                  <YAxis 
+                  <YAxis
                     stroke="#888"
                     tick={{ fill: '#888' }}
                     label={{ value: 'Latency (ms)', angle: -90, position: 'insideLeft', fill: '#888' }}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="latency" 
-                    stroke="#3b82f6" 
+                  <Line
+                    type="monotone"
+                    dataKey="latency"
+                    stroke="#3b82f6"
                     strokeWidth={2}
                     dot={{ fill: '#3b82f6', r: 3 }}
                     activeDot={{ r: 6 }}
