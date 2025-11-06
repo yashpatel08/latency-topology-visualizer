@@ -43,10 +43,17 @@ const timeRanges = [
   { value: '720', label: '30 Days', hours: 720 }
 ];
 
+type LatencyData = {
+  timestamp: string;
+  time: string;
+  latency: number;
+  date: string;
+};
+
 export default function HistoricalLatencyTrends() {
   const [selectedPair, setSelectedPair] = useState(serverPairs[0].id);
   const [timeRange, setTimeRange] = useState('24');
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<LatencyData[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
